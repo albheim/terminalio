@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<title>terminalio, the adventure begins</title>
+		<script src="terminal.js"></script>
+	</head>
+	<body>
+		<script>
+			var term = new Terminal();
+			term.setHeight("200px");
+			term.setWidth('600px');
+			document.body.appendChild(term.html);
+			
+			function send(text) {
+				//var url = "http://89.236.12.211:4242/cmd";
+				var url = "http://127.0.0.1:4242/cmd";
+				var method = "GET";
+
+				// You REALLY want shouldBeAsync = true.
+				// Otherwise, it'll block ALL execution waiting for server response.
+				var shouldBeAsync = true;
+
+				var request = new XMLHttpRequest();
+
+				// server responds
+				request.onload = function () {
+				   var status = request.status; // HTTP response status, e.g., 200 for "200 OK"
+				   var data = request.responseText; // Returned data, e.g., an HTML document.
+				   term.print(data);
+				}
+
+				request.open(method, url, shouldBeAsync);
+
+				request.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
+				// Or... request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+				// Or... whatever
+
+				// Actually sends the request to the server.
+				request.send(text);
+			}
+			
+			//while (true) {
+				term.input(">", send);
+				term.print("hello");
+			//}
+		</script>
+	</body>
+</html>
