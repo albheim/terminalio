@@ -1,8 +1,6 @@
-(defpackage :terminalio
-  (:use :cl :hunchentoot)
-  (:export :start-server))
+;(defpackage :terminalio (:use :cl :hunchentoot))
 
-(in-package :terminalio)
+;(in-package :terminalio)
 
 
 (defparameter *objects* '(whiskey-bottle bucket frog chain))
@@ -24,6 +22,13 @@
 
 (defparameter *doors* '((living-room attic nil 15723)
                         (living-room garden nil 516o235)))
+
+(defparameter *chain-welded* nil)
+
+(defparameter *bucket-filled* nil)
+
+;(defparameter *actions* '(look take use inventory help))
+(defparameter *actions* '(help look inventory walk pickup))
 
 (defun describe-location (location map)
   (second (assoc location map)))
@@ -52,7 +57,7 @@
 (defun walk-direction (direction)
   (let ((next (assoc direction (cddr (assoc *location* *map*)))))
     (cond (next (setf *location* (third next)) (look))
-          (t '(you can't go that way.)))))
+          (t '(you cannot go that way.)))))
 
 (defmacro defspel (&rest rest) `(defmacro ,@rest))
 
@@ -85,14 +90,12 @@
              ,@',rest)
             (t '(i cant ,',command like that)))))
 
-(defparameter *chain-welded* nil)
 
 (game-action weld chain bucket attic
              (cond ((and (have 'bucket) (setf *chain-welded* 't))
                     '(the chain is now securely welded to the bucket.))
                    (t '(you do not have a bucket))))
 
-(defparameter *bucket-filled* nil)
 
 (game-action dunk bucket will garden (cond (*chain-welded* (setf *bucket-filled* 't)
                                                            '(the bucket is nor full of water))
@@ -106,28 +109,40 @@
                    (t  '(the wizard awakens from his slumber and greets you warmly.
                          he hands you the magic low-carb donut- you win! the end.))))
 
-(defparameter *actions* '(look take use inventory))
 
-(defun help () *actions*)
+(defun help (&optional cmd)
+  (cond ((eq (car cmd) 'help) "help shows you general help, help <command> shows you specific help about that command")
+        ((eq (car cmd) 'look) "look around in the room you are currently in")
+        (t (string-downcase (format nil "available commands are: ~{~A~^, ~}" (mapcar #'string *actions*))))))
 
+(defun string-to-symbols (s)
+  (mapcar #'intern (split-sequence:split-sequence #\Space (string-upcase s))))
 
-;(defun run-cmd (cmd) (let ((c (explode$ cmd))) (car c)))
+(defun symbols-to-string (s)
+  (string-downcase (format nil "~{~A~^ ~}" (mapcar #'string s))))
 
-
+(defun run-cmd (cmd)
+  (let ((a (string-to-symbols cmd)))
+    (cond ((eq (car a) 'help)
+           (help (cdr a)))
+          ((eq (car a) 'echo)
+           (symbols-to-string a))
+          ((member (car a) *actions*) 
+           (symbols-to-string (eval a)))
+          (t "invalid command"))))
 
 
 ;;;; WEB SERVER
 
 
-(defvar *server* (make-instance 'hunchentoot:easy-acceptor :port 4242))
-;(hunchentoot:start *server*) to start it
+(ql:quickload '(hunchentoot))
+
+(defvar *server* (make-instance 'hunchentoot:easy-acceptor :port 4242 :document-root #p"c:/Users/Albin Heimerson/Dropbox/Programmering/terminalio/"))
+
+(hunchentoot:start *server*)
 
 (hunchentoot:define-easy-handler (send-cmd :uri "/cmd") (cmd)
   (setf (hunchentoot:content-type*) "text/plain")
-  (print "alsdfjlsdfjldkfj")
-  (format nil "hello ~a" cmd))
+  (run-cmd cmd))
 
-(hunchentoot:define-easy-handler (terminalio :uri "/") ()
-  (setf (hunchentoot:content-type*) "text/plain")
-  (print "alsdfjlsdfjldkfj"))
 

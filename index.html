@@ -1,49 +1,116 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8"/>
-		<title>terminalio, the adventure begins</title>
-		<script src="terminal.js"></script>
-	</head>
-	<body>
-		<script>
-			var term = new Terminal();
-			term.setHeight("200px");
-			term.setWidth('600px');
-			document.body.appendChild(term.html);
-			
-			function send(text) {
-				//var url = "http://89.236.12.211:4242/cmd";
-				var url = "http://127.0.0.1:4242/cmd";
-				var method = "GET";
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <title>Terminalio: A coding adventure with a lispy spirit</title>
+	<link rel="shortcut icon" type="image/png" href="/favicon.png"/>
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata"
+          rel="stylesheet" type="text/css" />
+	<style>
+		::selection {
+		  background: #FF5E99;
+		}
+		html, body {
+		  width: 100%;
+		  height: 100%;
+		  margin: 0;
+		}
+		body {
+		  font-size: 11pt;
+		  font-family: Inconsolata, monospace;
+		  color: white;
+		  background-color: black;
+		}
+		#container {
+		  padding: .1em 1.5em 1em 1em;
+		}
+		#container output {
+		  clear: both;
+		  width: 100%;
+		}
+		#container output h3 {
+		  margin: 0;
+		}
+		#container output pre {
+		  margin: 0;
+		}
+		.input-line {
+		  display: -webkit-box;
+		  -webkit-box-orient: horizontal;
+		  -webkit-box-align: stretch;
+		  display: -moz-box;
+		  -moz-box-orient: horizontal;
+		  -moz-box-align: stretch;
+		  display: box;
+		  box-orient: horizontal;
+		  box-align: stretch;
+		  clear: both;
+		}
+		.input-line > div:nth-child(2) {
+		  -webkit-box-flex: 1;
+		  -moz-box-flex: 1;
+		  box-flex: 1;
+		}
+		.prompt {
+		  white-space: nowrap;
+		  color: #96b38a;
+		  margin-right: 7px;
+		  display: -webkit-box;
+		  -webkit-box-pack: center;
+		  -webkit-box-orient: vertical;
+		  display: -moz-box;
+		  -moz-box-pack: center;
+		  -moz-box-orient: vertical;
+		  display: box;
+		  box-pack: center;
+		  box-orient: vertical;
+		  -webkit-user-select: none;
+		  -moz-user-select: none;
+		  user-select: none;
+		}
+		.cmdline {
+		  outline: none;
+		  background-color: transparent;
+		  margin: 0;
+		  width: 100%;
+		  font: inherit;
+		  border: none;
+		  color: inherit;
+		}
+		.ls-files {
+		  height: 45px;
+		  -webkit-column-width: 100px;
+		  -moz-column-width: 100px;
+		  -o-column-width: 100px;
+		  column-width: 100px;
+		}
 
-				// You REALLY want shouldBeAsync = true.
-				// Otherwise, it'll block ALL execution waiting for server response.
-				var shouldBeAsync = true;
+		</style>
+  </head>
+  <body>
+    <div id="container">
+      <output></output>
+      <div id="input-line" class="input-line">
+        <div class="prompt"></div><div><input class="cmdline" autofocus /></div>
+      </div>
+    </div>
+    
+    <!--<script src="http://www.codehelper.io/api/ips/?js"></script>-->
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="term.js"></script>
+	
+	<script>
+		$(function() {
+	  
+		  // Set the command-line prompt to include the user's IP Address
+		  //$('.prompt').html('[' + codehelper_ip["IP"] + '@HTML5] # ');
+			$('.prompt').html('[choose name] # ');
 
-				var request = new XMLHttpRequest();
-
-				// server responds
-				request.onload = function () {
-				   var status = request.status; // HTTP response status, e.g., 200 for "200 OK"
-				   var data = request.responseText; // Returned data, e.g., an HTML document.
-				   term.print(data);
-				}
-
-				request.open(method, url, shouldBeAsync);
-
-				request.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
-				// Or... request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-				// Or... whatever
-
-				// Actually sends the request to the server.
-				request.send(text);
-			}
-			
-			//while (true) {
-				term.input(">", send);
-				term.print("hello");
-			//}
-		</script>
-	</body>
+		  // Initialize a new terminal object
+		  var term = new Terminal('#input-line .cmdline', '#container output');
+		  term.init()
+		});
+	</script>
+    
+  </body>
 </html>
