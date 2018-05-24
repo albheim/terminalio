@@ -128,7 +128,7 @@ var Terminal = Terminal || function(cmdLineContainer, outputContainer) {
 				var status = request.status; // HTTP response status, e.g., 200 for "200 OK"
 				var data = request.responseText; // Returned data, e.g., an HTML document.
 				if (status == 200) {
-					output(data);
+					output(data.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;"));
 				}
 				else {
 					output("error with connection");
@@ -143,7 +143,7 @@ var Terminal = Terminal || function(cmdLineContainer, outputContainer) {
 			// Or... whatever
 
 			// Actually sends the request to the server.
-			request.send("cmd=" + cmd);
+			request.send("cmd=" + this.value);
           }
       };
 

@@ -1,12 +1,3 @@
-javascript terminal on frontend
-lisp backend with dungeoun crawl/breakout with coding/puzzles and stuff
+This is manly a project for me to learn lisp. I started from http://www.lisperati.com/casting.html and thought I would futher develop the world, and maybe have the problems be more towards programming/logic.
 
-
-
-skriv spel i lisp, enda api är en funktion som tar text input och returnerar text output. alla states hålls reda på inne i den.
-ha olika användare?
-
-http://www.lisperati.com/casting.html
-
-
-skicka javascript text till nginx som proxyar till hootentoot eller ngt upstream
+There will be a frontend in html/css/javascript that communicates with a lisp backend. This is all running on a hunchentoot server. Have some thought of using nginx as a proxy, but that is when the game has had some more work.
